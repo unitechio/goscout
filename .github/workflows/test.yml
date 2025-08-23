@@ -1,0 +1,39 @@
+name: Go CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      ssh-test:
+        image: linuxserver/openssh-server:latest
+        ports:
+          - 2222:2222
+        env:
+          PUID: 1000
+          PGID: 1000
+          TZ: Etc/UTC
+          USER_NAME: testuser
+          PASSWORD_ACCESS: true
+          USER_PASSWORD: testpass
+        options: >-
+          --health-cmd="nc -z localhost 2222 || exit 1"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+      - name: Download deps
+        run: go mod tidy
+      - name: Run tests
+        run: go test -v ./...
