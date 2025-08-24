@@ -23,7 +23,7 @@ jobs:
           USER_PASSWORD: testpass
         options: >-
           --health-cmd="nc -z localhost 2222 || exit 1"
-          --health-interval=5s
+          --health-interval=5sc
           --health-timeout=2s
           --health-retries=10
 
